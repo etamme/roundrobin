@@ -1,32 +1,34 @@
 const express = require('express')
 const app = express()
-const port = 3000
 const fs = require('fs')
-let maxhosts = 0
-let filepath = "./hosts.cfg"
+const util = require('util')
+const exec = util.promisify(require('child_process').exec)
+
+const port = 3000;
+const filepath = "./hosts.cfg";
+
+let hosts = [];
+let current_host = 0;
 
 try {
-  const data = fs.readFileSync(`${filepath}`, 'utf8')
-  console.log(data)
+    let data = fs.readFileSync(`${filepath}`,"utf-8");
+    hosts = data.split("\n")
+    /* we get one empty element at the end, so pop it */
+    hosts.pop()
 } catch (err) {
   console.error(err)
 }
 
-/* wc -l is likely faster than any native javascript */
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
-
-async function line_count({ fp }) {
-  const { stdout } = await exec(`cat ${fp} | wc -l`);
-  return parseInt(stdout);
-};
-
-let max_lines = line_count(filepath)
-
-
 app.get('/nexthost', (req, res) => {
-    console.log(`received call for next`)
-    res.send('next')
+    console.log(`received call for next\nmax_hosts:${hosts.length}\ncurrent_host:${current_host}`)
+    if(current_host>=hosts.length){
+        current_host=0
+    }
+    host = hosts[current_host]
+    current_host++
+    console.log(`new current_host:${current_host}`)
+
+    res.send(`${host}`)
   })
 
 app.get('/addhost', (req, res) => {
@@ -41,4 +43,6 @@ app.get('/removehost', (req, res) => {
 
 app.listen(port, () => {
   console.log(`listening at http://localhost:${port}`)
+  console.log(`max hosts: ${hosts.length}`)
+
 })
