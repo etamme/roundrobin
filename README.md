@@ -6,9 +6,16 @@ A simple round robin api implmentation
 #install / usage
 
 git clone https://github.com/etamme/roundrobin.git
+
+
 cd roundrobin
+
+
 npm install
+
+
 node index.js
+
 
 curl http://localhost:3000/nexthost
 
