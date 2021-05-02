@@ -27,7 +27,7 @@ cd roundrobin
 
 docker build -t roundrobin .
 
-docker run -p 80:3000 roundrobin
+docker run -p 3000:3000 roundrobin
 
 curl http://localhost:3000/nexthost
 
