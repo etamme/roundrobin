@@ -1,8 +1,6 @@
 const express = require('express')
 const app = express()
 const fs = require('fs')
-const util = require('util')
-const exec = util.promisify(require('child_process').exec)
 
 const port = 3000;
 const filepath = "./hosts.cfg";
@@ -32,13 +30,22 @@ app.get('/nexthost', (req, res) => {
   })
 
 app.get('/addhost', (req, res) => {
-    console.log(`received call for add`)
-    res.send('add')
+    new_host = req.query.host
+    console.log(`received call for add: ${new_host}`)
+    hosts.push(new_host)
+    res.send('OK')
 })
 
 app.get('/removehost', (req, res) => {
-    console.log(`received call for remove`)
-    res.send('remove')
+    console.log(`received call for remove\nmax_hosts:${hosts.length}\ncurrent_host:${current_host}`)
+    if(hosts.length>1){
+        hosts.pop();
+        res.send('OK')
+    } else {
+        res.status(500).send('Minimum of one host required')
+
+    }
+    console.log(`max_hosts:${hosts.length}\ncurrent_host:${current_host}`)
 })
 
 app.listen(port, () => {
